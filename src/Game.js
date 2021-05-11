@@ -1,4 +1,5 @@
 import React from 'react';
+import Settings from './Settings';
 import Board from './Board';
 
 function calculateWinner(playerCounts, winCount) {
@@ -49,6 +50,52 @@ class Game extends React.Component {
             .fill(0)
             .map((player) => new Array(this.state.numRows + this.state.numCols + 2).fill(0));
         this.state.playerCounts = playerCounts;
+
+        this.generateStartingState = this.generateStartingState.bind(this);
+    }
+
+    generateStartingState(newRowDim, newColDim) {
+        // const rows = this.state.numRows;
+        // const cols = this.state.numCols;
+        const rows = newRowDim;
+        const cols = newColDim;
+        console.log(`rows: ${rows}`);
+        console.log(`cols: ${cols}`);
+
+        let freshHistory = [];
+        let startingSquares = new Array();
+        for (let i = 0; i < rows; i++) {
+            startingSquares.push(new Array());
+            for (let j = 0; j < cols; j++) {
+                startingSquares[i].push({ value: null, win: false });
+            }
+        }
+
+        freshHistory.push({ squares: startingSquares, move: null });
+        console.log(`freshHistory: ${freshHistory[0].squares.length}`);
+        for (let i = 0; i < rows; i++) {
+            for (let j = 0; j < cols; j++) {
+                console.log(freshHistory[0].squares[i][j]);
+            }
+        }
+
+        // this.state.history.push({
+        //     squares: Array(this.state.numRows)
+        //         .fill(0)
+        //         .map((row) => new Array(this.state.numCols).fill({ value: null, win: false })),
+        // });
+
+        let playerCounts = Array(this.state.numPlayers)
+            .fill(0)
+            .map((player) => new Array(rows + cols + 2).fill(0));
+
+        this.setState({
+            winCount: newRowDim,
+            history: freshHistory,
+            moveNumber: 0,
+            xIsNext: true,
+            playerCounts: playerCounts,
+        });
     }
 
     updateCounts(player, chosenRow, chosenCol) {
@@ -135,6 +182,21 @@ class Game extends React.Component {
         });
     }
 
+    updateDimensions(fieldName, value) {
+        switch (fieldName) {
+            case 'row':
+                this.setState({ numRows: value, numCols: value });
+                this.generateStartingState(value, value);
+                break;
+            case 'col':
+                this.setState({ numRows: value, numCols: value });
+                this.generateStartingState(value, value);
+                break;
+            default:
+                break;
+        }
+    }
+
     render() {
         // const { ...currentBoardState } = this.state.history;
         const history = this.state.history;
@@ -167,6 +229,12 @@ class Game extends React.Component {
 
         return (
             <div className="game">
+                <Settings
+                    rows={this.state.numRows}
+                    cols={this.state.numCols}
+                    onClick={(fieldName, value) => this.updateDimensions(fieldName, value)}
+                    onRestart={() => this.generateStartingState(this.state.numRows, this.state.numCols)}
+                ></Settings>
                 <div className="game-board">
                     <Board
                         rows={this.state.numRows}
