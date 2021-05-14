@@ -1,7 +1,8 @@
 :root {
-    --main-text-color: #f388f7;
-    --main-text-shadow: #e6d53c;
+    --main-text-color: #F388F7;
+    --main-text-shadow: #E6D53C;
+    --secondary-color: #EABB7A;
     --title-border-offset: 1px;
     --heading-border-offset: 0.7px;
-    --win-color: rgb(235, 236, 143);
+    --win-color: #EFA2B9;
 }
