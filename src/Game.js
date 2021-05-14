@@ -1,4 +1,5 @@
 import React from 'react';
+import './Game.css';
 import Settings from './Settings';
 import Board from './Board';
 
@@ -27,6 +28,7 @@ class Game extends React.Component {
             xIsNext: true,
             numPlayers: 2,
             playerCounts: [],
+            darkMode: false,
         };
 
         let startingSquares = new Array();
@@ -98,6 +100,17 @@ class Game extends React.Component {
         });
     }
 
+    onToggleDarkMode() {
+        this.setState(
+            {
+                darkMode: !this.state.darkMode,
+            },
+            () => {
+                this.state.darkMode ? (document.body.className = 'darkMode') : (document.body.className = '');
+            },
+        );
+    }
+
     updateCounts(player, chosenRow, chosenCol) {
         let allCounts = this.state.playerCounts;
         let playerCounts = allCounts[player];
@@ -153,13 +166,15 @@ class Game extends React.Component {
         const history = this.state.history.slice(0, this.state.moveNumber + 1);
         // const { ...current } = history;
         const current = history[history.length - 1];
-        const squares = current.squares.slice();
+        let squares = JSON.parse(JSON.stringify(current.squares));
+
         const { winningPlayer, winningPathIndex } = calculateWinner(this.state.playerCounts, this.state.winCount);
         if (squares[row][col].value || winningPlayer != null) {
             return;
         }
 
         squares[row][col].value = this.state.xIsNext ? 'X' : 'O';
+
         const player = this.state.xIsNext ? 0 : 1;
         this.updateCounts(player, row, col);
 
@@ -228,24 +243,34 @@ class Game extends React.Component {
         });
 
         return (
-            <div className="game">
+            <div className={`game ${this.state.darkMode ? 'darkMode' : ''}`}>
+                <div className="title">
+                    <h1>Tic</h1>
+                    <h1>Tac</h1>
+                    <h1>Toe</h1>
+                </div>
                 <Settings
                     rows={this.state.numRows}
                     cols={this.state.numCols}
                     onClick={(fieldName, value) => this.updateDimensions(fieldName, value)}
                     onRestart={() => this.generateStartingState(this.state.numRows, this.state.numCols)}
+                    className="game-settings"
+                    darkMode={this.state.darkMode}
+                    onToggleDarkMode={() => this.onToggleDarkMode()}
                 ></Settings>
-                <div className="game-board">
+                <div className="status">{status}</div>
+                <div className="game-field">
+                    {/* <div className="status">{status}</div> */}
                     <Board
                         rows={this.state.numRows}
                         cols={this.state.numCols}
                         squares={currentBoardState.squares}
                         onClick={(row, col) => this.handleClick(row, col)}
+                        className="game-board"
                     />
                 </div>
-                <div className="game-info">
-                    {/* <div>{status}</div> */}
-                    <div className="status">{status}</div>
+                <div className="game-history">
+                    <h2>History</h2>
                     <ol>{moves}</ol>
                 </div>
             </div>

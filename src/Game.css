@@ -1,0 +1,109 @@
+@import './colors.css';
+
+ol,
+ul {
+    padding-left: 30px;
+}
+
+.game {
+    display: flex;
+    flex-flow: row wrap;
+    align-content: stretch;
+    justify-content: center;
+}
+
+.title {
+    flex-basis: 100%;
+    text-align: center;
+    font-size: 32px;
+    text-transform: uppercase;
+    transform: rotate(-10deg) skew(-5deg) translatey(-20px);
+    margin-bottom: -40px;
+}
+
+.title h1 {
+    margin: 0;
+    color: white;
+    text-shadow: 
+        var(--title-border-offset) var(--title-border-offset) var(--main-text-color),
+        var(--title-border-offset) calc(-1 * var(--title-border-offset)) var(--main-text-color),
+        calc(-1 * var(--title-border-offset)) var(--title-border-offset) var(--main-text-color),
+        calc(-1 * var(--title-border-offset)) calc(-1 * var(--title-border-offset)) var(--main-text-color),
+        -5px 5px var(--main-text-shadow);
+    /* I dunno which is better */
+    text-shadow: 
+        1px 1px var(--main-text-color),
+        1px -1px var(--main-text-color),
+        -3px 3px var(--main-text-color),
+        -1px -1px var(--main-text-color),
+        -7px 7px var(--main-text-shadow);
+}
+
+:is(h1, h2, h3, h4) {
+    color: white;
+    text-shadow:
+    var(--heading-border-offset) var(--heading-border-offset) var(--main-text-color),
+    var(--heading-border-offset) calc(-1 * var(--heading-border-offset)) var(--main-text-color),
+    calc(-1 * var(--heading-border-offset)) var(--heading-border-offset) var(--main-text-color),
+    calc(-1 * var(--heading-border-offset)) calc(-1 * var(--heading-border-offset)) var(--main-text-color),
+    -2px 2px var(--main-text-shadow);
+
+    color: var(--main-text-color);
+    text-shadow: -1px 1px var(--main-text-shadow);;
+}
+
+h1:first-of-type {
+    transform: translatex(-80px) translatey(20px);
+}
+
+h1:nth-of-type(2n) {
+}
+
+h1:last-of-type {
+    transform: translatex(80px) translatey(-20px);
+}
+
+.game-field {
+    flex-basis: 100%;
+    width: 100%;
+    align-content: center;
+}
+
+.game-board {
+    /* display: inline-flex; */
+}
+
+.status {
+    margin-bottom: 20px;
+}
+
+.game-history {
+    text-align: center;
+}
+
+button {
+    padding: 5px 10px;
+    margin: 10px;
+    background-color: white;
+    border-radius: 5px;
+    border: 7px outset var(--main-text-color);
+    box-shadow: -5px 5px var(--main-text-shadow);
+}
+
+
+.game-history li {
+    text-align: left;
+}
+
+.game-history button {
+    min-width: 134px;
+}
+
+.game-history p {
+    display: inline-block;
+    font-weight: bold;
+}
+
+.selectedMove {
+    font-weight: bold;
+}

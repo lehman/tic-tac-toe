@@ -1,0 +1,46 @@
+.square {
+/*     
+    background: rgb(0, 0, 0);
+    height: 34px;
+    width: 33%;
+    padding: 0;
+    text-align: center;
+    border-radius: 50%;
+    font-size: 24px;
+    font-weight: bold;
+    border: none; */
+
+
+    background: #fff;
+    border: 1px solid #999;
+    float: left;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 34px;
+    width: 34px;
+    margin-right: -1px;
+    margin-top: -1px;
+    padding: 0;
+    text-align: center;
+    
+    border-color: var(--main-text-color);
+    border-top-width: 1px;
+    border-right-width: 1px;
+    border-left-width: 2px;
+    border-bottom-width: 2px;
+    box-shadow: -3px 3px var(--main-text-shadow);
+}
+
+.win {
+    background: var(--win-color);
+}
+
+.square:focus {
+    outline: none;
+}
+
+.kbd-navigation .square:focus {
+    background: #ddd;
+}
+  

@@ -1,0 +1,37 @@
+.game-settings {
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.setting {
+    display: inline-flex;
+    padding: 10px;
+
+}
+
+label {
+    padding-right: 10px;
+    align-self: center;
+}
+
+input {
+    text-align: center;
+    width: 48px;
+    height: 28px;
+}
+
+.restartButton {
+    margin: 10px;
+}
+
+.restartButton button {
+    /* padding: 5px 10px;
+    border-radius: 5px;
+    border: 10px outset var(--main-text-color);
+    box-shadow: 5px 5px var(--main-text-shadow); */
+    min-width: 150px;
+    min-height: 50px;
+    font-size: 16px;
+}
