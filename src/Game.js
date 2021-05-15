@@ -57,12 +57,8 @@ class Game extends React.Component {
     }
 
     generateStartingState(newRowDim, newColDim) {
-        // const rows = this.state.numRows;
-        // const cols = this.state.numCols;
-        const rows = newRowDim;
-        const cols = newColDim;
-        console.log(`rows: ${rows}`);
-        console.log(`cols: ${cols}`);
+        const rows = parseInt(newRowDim);
+        const cols = parseInt(newColDim);
 
         let freshHistory = [];
         let startingSquares = new Array();
@@ -74,12 +70,6 @@ class Game extends React.Component {
         }
 
         freshHistory.push({ squares: startingSquares, move: null });
-        console.log(`freshHistory: ${freshHistory[0].squares.length}`);
-        for (let i = 0; i < rows; i++) {
-            for (let j = 0; j < cols; j++) {
-                console.log(freshHistory[0].squares[i][j]);
-            }
-        }
 
         // this.state.history.push({
         //     squares: Array(this.state.numRows)
@@ -111,33 +101,66 @@ class Game extends React.Component {
         );
     }
 
-    updateCounts(player, chosenRow, chosenCol) {
-        let allCounts = this.state.playerCounts;
-        let playerCounts = allCounts[player];
+    addMoveToCounts(allPlayerCounts, player, chosenRow, chosenCol) {
+        const rows = parseInt(this.state.numRows);
+        const cols = parseInt(this.state.numCols);
 
         // update count for row the chosen move is in
-        playerCounts[chosenRow]++;
+        allPlayerCounts[player][chosenRow]++;
 
         // update count for column the chosen move is in
-        playerCounts[chosenCol + this.state.numRows]++;
+        allPlayerCounts[player][chosenCol + rows]++;
 
         // update count for diagonal the chosen move is in, if any
-        if (chosenRow === chosenCol) {
+        if (chosenRow == chosenCol) {
             // on left to right, top to bottom diagonal
-            playerCounts[this.state.numRows + this.state.numCols]++;
+            allPlayerCounts[player][rows + cols]++;
         }
-        if (chosenRow + chosenCol + 1 === this.state.numRows) {
+        if (chosenRow + chosenCol + 1 == this.state.numRows) {
             // on right to left, top to bottom diagonal
-            playerCounts[this.state.numRows + this.state.numCols + 1]++;
+            allPlayerCounts[player][rows + cols + 1]++;
         }
+    }
 
-        allCounts[player] = playerCounts;
-        this.setState({ playerCounts: allCounts });
+    updateCounts(player, chosenRow, chosenCol) {
+        const rows = parseInt(this.state.numRows);
+        const cols = parseInt(this.state.numCols);
+
+        // history always has extra entry for initial blank board state
+        if (this.state.moveNumber == this.state.history.length - 1) {
+            // we're adding a move to the end
+            let allPlayerCounts = this.state.playerCounts;
+            this.addMoveToCounts(allPlayerCounts, player, chosenRow, chosenCol);
+            this.setState({ playerCounts: allPlayerCounts });
+        } else {
+            // we jumped to a previous move in history and then made a new move,
+            // so we need to redo all the counts
+            let allPlayerCounts = Array(this.state.numPlayers)
+                .fill(0)
+                .map((player) => new Array(rows + cols + 2).fill(0));
+            const latestBoardState = this.state.history[this.state.moveNumber].squares;
+
+            let player = 0;
+            for (let i = 0; i < rows; i++) {
+                for (let j = 0; j < cols; j++) {
+                    // latestBoardState[i][j].value ?? continue;
+                    if (latestBoardState[i][j].value == null) {
+                        continue;
+                    }
+                    latestBoardState[i][j].value === 'X' ? (player = 0) : (player = 1);
+                    this.addMoveToCounts(allPlayerCounts, player, i, j);
+                }
+            }
+
+            // since state history doesn't have the most recent move, add that count here
+            this.addMoveToCounts(allPlayerCounts, player, chosenRow, chosenCol);
+            this.setState({ playerCounts: allPlayerCounts });
+        }
     }
 
     markWinningSquares(winningPathIndex) {
-        const totalRows = this.state.numRows;
-        const totalCols = this.state.numCols;
+        const totalRows = parseInt(this.state.numRows);
+        const totalCols = parseInt(this.state.numCols);
         let squares = this.state.history[this.state.history.length - 1].squares.slice();
         if (winningPathIndex < totalRows) {
             // index is the row number, mark all squares in that row
@@ -169,7 +192,10 @@ class Game extends React.Component {
         let squares = JSON.parse(JSON.stringify(current.squares));
 
         const { winningPlayer, winningPathIndex } = calculateWinner(this.state.playerCounts, this.state.winCount);
-        if (squares[row][col].value || winningPlayer != null) {
+        if (
+            squares[row][col].value ||
+            (winningPlayer != null && this.state.moveNumber == this.state.history.length - 1)
+        ) {
             return;
         }
 
@@ -186,25 +212,33 @@ class Game extends React.Component {
                 },
             ]),
             xIsNext: !this.state.xIsNext,
-            moveNumber: ++this.state.moveNumber,
+            moveNumber: this.state.moveNumber + 1,
         });
     }
 
     jumpToMove(i) {
         this.setState({
             xIsNext: i % 2 === 0,
-            moveNumber: i,
+            moveNumber: parseInt(i),
         });
     }
 
     updateDimensions(fieldName, value) {
         switch (fieldName) {
             case 'row':
-                this.setState({ numRows: value, numCols: value });
+                this.setState({
+                    numRows: value,
+                    numCols: value,
+                    winCount: value,
+                });
                 this.generateStartingState(value, value);
                 break;
             case 'col':
-                this.setState({ numRows: value, numCols: value });
+                this.setState({
+                    numRows: value,
+                    numCols: value,
+                    winCount: value,
+                });
                 this.generateStartingState(value, value);
                 break;
             default:
@@ -219,10 +253,10 @@ class Game extends React.Component {
         // const winningPath = calculateWinner(currentBoardState.squares);
         const { winningPlayer, winningPathIndex } = calculateWinner(this.state.playerCounts, this.state.winCount);
         let status;
-        if (winningPlayer != null) {
+        if (winningPlayer != null && this.state.moveNumber == history.length - 1) {
             status = `${winningPlayer === 0 ? 'X' : 'O'} is the Winner!`;
             this.markWinningSquares(winningPathIndex);
-        } else if (this.state.moveNumber === 9) {
+        } else if (this.state.moveNumber === this.state.numRows * this.state.numCols) {
             status = `It's a draw!`;
         } else {
             status = `Next player: ${this.state.xIsNext ? 'X' : 'O'}`;
